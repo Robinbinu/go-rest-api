@@ -72,7 +72,7 @@ func updateEvent(context *gin.Context) {
 		return
 	}
 
-	//get the updates event from request
+	//get the updated event from request
 	var updateEvent models.Event
 	err = context.ShouldBindJSON(&updateEvent)
 
@@ -100,3 +100,30 @@ func updateEvent(context *gin.Context) {
 			"event":   updateEvent})
 
 }
+
+func deleteEvent(context *gin.Context) {
+	//get id from url
+	eventID, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse event id"})
+		return
+	}
+	//check if the event exists
+	event, err := models.GetEventById(eventID)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "invalid event id"})
+		return
+	}
+
+	//delete event
+	err = event.Delete()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message":"error while deleting event"})
+		return
+	}
+
+	context.JSON(http.StatusOK,gin.H{"message":"event deleted successfully"})
+
+}
+
+

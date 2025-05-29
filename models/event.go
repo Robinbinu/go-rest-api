@@ -71,7 +71,8 @@ func GetAllEvents() ([]Event, error) {
 	return events, nil
 }
 
-func GetEventById(id int64) (*Event, error) { //using a pointer to return nil
+ //using a pointer to return nil
+func GetEventById(id int64) (*Event, error) {
 	var event Event
 	query := `
 			SELECT * FROM events
@@ -108,5 +109,25 @@ func (e Event) UpdateEvent() error {
 		return err
 	}
 
+	return nil
+}
+
+func (e Event) Delete() error{
+	//prepare deletion query
+	query := "DELETE from events where id = ?"
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		log.Println("Error during query preparation ", err)
+		return err
+	}
+
+	defer stmt.Close()
+	
+	//delete query execution
+	_,err=stmt.Exec(e.ID)
+	if err != nil {
+		log.Println("error during event deletion ",err)
+		return err
+	}
 	return nil
 }
