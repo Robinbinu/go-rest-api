@@ -1,0 +1,11 @@
+
+POST http://localhost:8080/events
+Content-Type: application/json
+
+{
+    "name":"Robin",
+    "description":"great",
+    "Location": "India",
+    "DateTime": "0001-01-01T00:00:00Z",
+    "UserID": 234
+}

@@ -1,25 +1,17 @@
 package main
 
 import (
-	"net/http"
-
+	"example.com/db"
+	"example.com/routes"
 	"github.com/gin-gonic/gin"
 )
 
-func main(){
+func main() {
+	db.InitDB()
+
+	//gin server
 	server := gin.Default()
-	server.GET("/",rootHandler)
-	server.GET("/events",eventHandler)
+	routes.RegisterRoutes(server)
+	
 	server.Run()
-}
-
-func rootHandler(context *gin.Context){
-	context.JSON(http.StatusOK,gin.H{
-		"message":"root",
-		"location":"/",
-	})
-}
-
-func eventHandler(context *gin.Context){
-	context.JSON(http.StatusAccepted,"No Events Found")
 }
