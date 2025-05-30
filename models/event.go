@@ -10,10 +10,10 @@ import (
 
 type Event struct {
 	ID          int64
-	Name        string
-	Description string
-	Location    string
-	DateTime    time.Time
+	Name        string    `binding:"required"`
+	Description string    `binding:"required"`
+	Location    string    `binding:"required"`
+	DateTime    time.Time `binding:"required"`
 	UserID      int
 }
 
@@ -71,7 +71,7 @@ func GetAllEvents() ([]Event, error) {
 	return events, nil
 }
 
- //using a pointer to return nil
+// using a pointer to return nil
 func GetEventById(id int64) (*Event, error) {
 	var event Event
 	query := `
@@ -103,7 +103,7 @@ func (e Event) UpdateEvent() error {
 	//auto close after func
 	defer stmt.Close()
 
-	_, err = stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID,e.ID)
+	_, err = stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID, e.ID)
 	if err != nil {
 		log.Println("Error during query execution ", err)
 		return err
@@ -112,7 +112,7 @@ func (e Event) UpdateEvent() error {
 	return nil
 }
 
-func (e Event) Delete() error{
+func (e Event) Delete() error {
 	//prepare deletion query
 	query := "DELETE from events where id = ?"
 	stmt, err := db.DB.Prepare(query)
@@ -122,11 +122,11 @@ func (e Event) Delete() error{
 	}
 
 	defer stmt.Close()
-	
+
 	//delete query execution
-	_,err=stmt.Exec(e.ID)
+	_, err = stmt.Exec(e.ID)
 	if err != nil {
-		log.Println("error during event deletion ",err)
+		log.Println("error during event deletion ", err)
 		return err
 	}
 	return nil
