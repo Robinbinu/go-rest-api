@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 
 	"example.com/models"
+	"example.com/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,5 +42,12 @@ func login(context *gin.Context){
 		return
 	}
 
-	context.JSON(http.StatusOK,gin.H{"message":"Login successful"})
+	token,err:=utils.GenerateToken(user.Email,user.ID)
+	if err != nil {
+		log.Println("JWT generation failed",err)
+		context.JSON(http.StatusInternalServerError,gin.H{"message":"Login failed"})
+		return
+	}
+
+	context.JSON(http.StatusOK,gin.H{"message":"Login successful","token":token})
 }
