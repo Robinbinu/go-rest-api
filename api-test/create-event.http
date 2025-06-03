@@ -1,11 +1,12 @@
 
 POST http://localhost:8080/events
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHh5ei5jb20iLCJleHAiOjE3NDg5Mzc0NzMsInVzZXJJZCI6MX0.LqlgFxmqN3PRqysy8qVr3Xr8r1U0Lii_8kTu1fFSoDc
 
 {
     "name":"Robin",
     "description":"great",
-    "Location": "India",
-    "DateTime": "0001-01-01T00:00:00Z",
-    "UserID": 234
+    "location": "India",
+    "dateTime": "2000-03-30T00:00:00Z",
+    "userID": 234
 }

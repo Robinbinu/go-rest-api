@@ -1,10 +1,12 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
 	"example.com/models"
+	"example.com/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,9 +28,28 @@ func getEvents(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
-	var event models.Event
-	err := context.ShouldBindJSON(&event)
+	//jwt token verfication
+	token := context.Request.Header.Get("Authorization")
+	if token ==""{
+		log.Println("token is null")
+		context.JSON(http.StatusUnauthorized,gin.H{"message":"Not authorized"})
+		return
+	}
+
+	err:=utils.VerifyToken(token)
 	if err != nil {
+		log.Println(err)
+		context.JSON(http.StatusUnauthorized,gin.H{"message":"Not authorized"})
+		return
+	}
+
+
+
+
+	var event models.Event
+	err = context.ShouldBindJSON(&event)
+	if err != nil {
+		log.Println(err)
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse data."})
 		return
 	}
