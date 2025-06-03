@@ -1,11 +1,11 @@
 
 PUT http://localhost:8080/events/1
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QyQHh5ei5jb20iLCJleHAiOjE3NDg5NDgwMjcsInVzZXJJZCI6MX0.d2sX7kFIInd0GtbczA2HRuU68Ovg_oJZi_b7knv4ku8
 
 {
     "name": "Robin_Binu",
     "description": "testing and ...",
     "location": "Switzerland",
-    "dateTime": "0003-01-01T00:00:00Z",
-    "userID": 303
+    "dateTime": "0003-01-01T00:00:00Z"
 }

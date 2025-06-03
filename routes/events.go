@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"example.com/models"
-	"example.com/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,26 +27,18 @@ func getEvents(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
-	//jwt token verfication
-	token := context.Request.Header.Get("Authorization")
-	if token ==""{
-		log.Println("token is null")
-		context.JSON(http.StatusUnauthorized,gin.H{"message":"Not authorized"})
-		return
-	}
-
-	err:=utils.VerifyToken(token)
-	if err != nil {
-		log.Println(err)
-		context.JSON(http.StatusUnauthorized,gin.H{"message":"Not authorized"})
-		return
-	}
-
-
-
 
 	var event models.Event
-	err = context.ShouldBindJSON(&event)
+	//set userId of event from the verified token data
+	eUserID, ok := context.Get("userID")
+	if !ok {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "userid not found",
+		})
+	}
+	event.UserID = eUserID.(int64)
+	err := context.ShouldBindJSON(&event)
+	log.Default().Println(event, " ", context.GetInt64("userId"))
 	if err != nil {
 		log.Println(err)
 		context.JSON(http.StatusBadRequest, gin.H{"message": "could not parse data."})
@@ -87,15 +78,22 @@ func updateEvent(context *gin.Context) {
 		return
 	}
 	//check if the event exists
-	_, err = models.GetEventById(eventID)
+	event, err := models.GetEventById(eventID)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "invalid event id"})
+		return
+	}
+	userID := context.GetInt64("userID")
+	eventUserID := event.UserID
+	if eventUserID != userID {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "userid mismatch"})
 		return
 	}
 
 	//get the updated event from request
 	var updateEvent models.Event
 	err = context.ShouldBindJSON(&updateEvent)
+	updateEvent.UserID = eventID
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError,
@@ -136,15 +134,20 @@ func deleteEvent(context *gin.Context) {
 		return
 	}
 
-	//delete event
-	err = event.Delete()
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message":"error while deleting event"})
+	userID := context.GetInt64("userID")
+	eventUserID := event.UserID
+	if eventUserID != userID {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "userid mismatch unauthorised"})
 		return
 	}
 
-	context.JSON(http.StatusOK,gin.H{"message":"event deleted successfully"})
+	//delete event
+	err = event.Delete()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"message": "error while deleting event"})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "event deleted successfully"})
 
 }
-
-
