@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.21'  # Replace with the latest stable version
+          go-version: '1.24.5'  # Replace with the latest stable version
 
       # Clear Go module cache
       - name: Clear Go module cache
